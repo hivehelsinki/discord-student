@@ -1,0 +1,24 @@
+{
+  "name": "test_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "body-parser": "^1.19.0",
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "axios": "^0.21.0",
+    "dateformat": "^3.0.3",
+    "discord.js": "^12.4.1",
+    "enmap": "^5.8.0",
+    "express": "^4.17.1"
+  }
+}
