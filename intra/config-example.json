@@ -1,0 +1,15 @@
+{
+	"active_cursus": 1, 
+	"active_campus": 13, 
+	"port": 3131, 
+
+	"hooks_secrets": {
+		"intra-events": "HOOK_SECRET_HERE" 
+	}, 
+
+	"client": "CLIENT ID HERE", 
+	"secret": "CLIENT SECRET HERE", 
+	"token_url": "https://api.intra.42.fr/oauth/token", 
+	"endpoint": "https://api.intra.42.fr/v2", 
+	"scopes": "public forum projects profile elearning tig"
+}
