@@ -59,7 +59,7 @@ async function writeHeader(params) {
 async function intraRequest(method, url, params={}) {
 	await writeHeader(params);
 	params.method = params.method == undefined ? method : params.method;
-	params.timeout = params.timeout == undefined ? 900 * 1000 : params.timeout;
+	params.timeout = params.timeout == undefined ? TIMEOUT * 1000 : params.timeout;
 	params.url = params.url == undefined ? `${intraConf.endpoint}/${url}` : params.url;	
 	let tries = 0;
 	while (tries < TRIESLIMIT) {
