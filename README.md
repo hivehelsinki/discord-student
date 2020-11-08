@@ -47,7 +47,7 @@ ic.intraRequest("get", "users", {params: {'filter[id]': 24007}})
 
 --- 
 However, in order to set up a new endpoint, you have to create a file named exactly as endpoint url in [endpoints](https://github.com/hivehelsinki/discord-student/blob/main/intra/endpoints/) folder. This endpoint main exports module should be a function which receives 4 parameters: discordClient (to send messages and interact with discord server), intraConf (in case you need to check on configuration file *note: should be changed to intra client which will have config in it*), req, and res. 
-You can check an example in [intra-events.js](https://github.com/hivehelsinki/discord-student/blob/main/intra/endpoints/intra-events.js). This endpoint receives information about every event created in the intra and posts information to announcements channel.
+You can check an example in [intra-events.js](https://github.com/hivehelsinki/discord-student/blob/main/intra/endpoints/intra-events.js). This endpoint receives information about every event created in the intra and posts information to announcements channel on discord.
 
 # AFTERWORD
 This bot is on early stage of its development. We hope to see it flourish driven by creative force of the Hive Helsinki student community. It is up to you to help it grow, use it to empower the learning spirit, to strengthen others students motivation to study, to enable active exchange of knowledge and connections inside our cozy hive. 
