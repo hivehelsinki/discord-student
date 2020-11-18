@@ -3,6 +3,9 @@ module.exports = (client, message) => {
 
 	if (message.content.indexOf(client.config.prefix) !== 0) return;
 
+	// Ignore messages that are not send from authorized channels or categories.
+  if (client.authorizedCommandLocations(client, message) === false) return;
+
 	const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
 	const command = args.shift().toLowerCase();
 
