@@ -1,4 +1,5 @@
 {
 	"token": "TOKEN SECRET HERE",
-	"prefix": "bee "
+	"prefix": "/",
+	"rulesChannel": "man-discord"
 }
