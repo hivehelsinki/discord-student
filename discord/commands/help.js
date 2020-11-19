@@ -6,11 +6,9 @@ exports.help = {
   usage: `‣ \`${config.prefix}help\``
 }
 
-exports.run = (client, message, args) => {
-  rulesChannel = message.guild.channels.cache.find(channel => channel.name === client.config.rulesChannel);
-  
+exports.run = (client, message, args) => {  
   msg = `:purple_circle: **RULES AND USAGE OF THE DISCORD SERVER**\n
-You can find the rules and some features on the ${rulesChannel.toString()} channel
+You can find the rules and some features on the ${client.rulesChannel.toString()} channel
   
 :purple_circle: **AVAILABLE COMMANDS**\n`;
   
