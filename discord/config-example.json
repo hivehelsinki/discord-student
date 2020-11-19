@@ -3,5 +3,6 @@
 	"prefix": "/",
 	"pmBotAuthorized": true,
 	"authorizedCommandChannels": ["commands"],
-	"authorizedCommandCategories": ["PRIVATE GROUPS"]
+	"authorizedCommandCategories": ["PRIVATE GROUPS"],
+	"rulesChannelName": "man-discord"
 }
