@@ -4,5 +4,5 @@
 	"pmBotAuthorized": true,
 	"authorizedCommandChannels": ["commands"],
 	"authorizedCommandCategories": ["PRIVATE GROUPS"],
-	"rulesChannel": "man-discord"
+	"rulesChannelName": "man-discord"
 }

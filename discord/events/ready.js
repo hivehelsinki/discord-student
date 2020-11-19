@@ -1,5 +1,4 @@
 module.exports = (client, message) => {
-  let guild = client.guilds.cache.values().next().value;
-  client.rulesChannel = guild.channels.cache.find(channel => channel.name === client.config.rulesChannel);
-  console.log("The bot is ready!");
+  client.config.guild = client.guilds.cache.last();
+  client.config.rulesChannel = client.config.guild.channels.cache.find(channel => channel.name === client.config.rulesChannelName);
 };
