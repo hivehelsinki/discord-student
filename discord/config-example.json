@@ -1,4 +1,8 @@
 {
 	"token": "TOKEN SECRET HERE",
-	"prefix": "bee "
+	"prefix": "/",
+	"pmBotAuthorized": true,
+	"authorizedCommandChannels": ["commands"],
+	"authorizedCommandCategories": ["PRIVATE GROUPS"],
+	"rulesChannelName": "man-discord"
 }
