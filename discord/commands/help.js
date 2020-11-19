@@ -8,7 +8,7 @@ exports.help = {
 
 exports.run = (client, message, args) => {  
   msg = `:purple_circle: **RULES AND USAGE OF THE DISCORD SERVER**\n
-You can find the rules and some features on the ${client.rulesChannel.toString()} channel
+You can find the rules and some features on the ${client.rulesChannel} channel
   
 :purple_circle: **AVAILABLE COMMANDS**\n`;
   
