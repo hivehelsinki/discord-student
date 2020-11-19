@@ -1,3 +1,11 @@
+const config = require("../config.json");
+
+exports.help = {
+  name: "help",
+  description: "The simple command you're using right now. Displays a small help documentation.",
+  usage: `‣ \`${config.prefix}help\``
+}
+
 exports.run = (client, message, args) => {
   rulesChannel = message.guild.channels.cache.find(channel => channel.name === client.config.rulesChannel);
   
@@ -13,10 +21,4 @@ You can find the rules and some features on the ${rulesChannel.toString()} chann
     msg += `${command.help.usage}\n`;
   });
   message.channel.send(msg).catch(console.error);
-}
-
-exports.help = {
-  name: "help",
-  description: "The simple command you're using right now. Displays a small help documentation.",
-  usage: "‣ \`/help\`"
 }
