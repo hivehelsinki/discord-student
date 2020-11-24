@@ -4,5 +4,7 @@
 	"pmBotAuthorized": true,
 	"authorizedCommandChannels": ["commands"],
 	"authorizedCommandCategories": ["PRIVATE GROUPS"],
-	"rulesChannelName": "man-discord"
+	"rulesChannelName": "man-discord",
+	"studentRole": "Student",
+	"privateGroupsCategory": "PRIVATE GROUPS"
 }

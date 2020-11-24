@@ -40,22 +40,6 @@ fs.readdir('./discord/commands/', (err, files) => {
 	});
 });
 
-client.authorizedCommandLocations = (client, message) => {
-  let channel = message.channel;
-  // We allow commands to be sent through DMs.
-  if (channel.type === 'dm' && client.config.pmBotAuthorized === true)
-    return true;
-  if (channel.type === 'text') {
-		// We allow commands to be sent through the commands allowed channels.
-		if (client.config.authorizedCommandChannels.includes(channel.name))
-			return true;
-		// We allow commands to be sent through the commands allowed categories.
-		if (channel.parent && client.config.authorizedCommandCategories.includes(channel.parent.name))
-      return true;
-  }
-  return false;
-}
-
 client.login(config.token);
 
 module.exports = client;

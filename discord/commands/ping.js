@@ -8,7 +8,10 @@ exports.help = {
 }
 
 exports.run = (client, message, args) => {
-	if (client.helpers.commandShared.helpArg(args, message.channel, exports.help))
+	// We only allow this command to be run by DM or command channels (not categories).
+	if (!client.helpers.channelsAuth.onlyAuthorizeDmOrChannel(client, message)) return;
+	// Returns documentation.
+	if (client.helpers.shared.helpArg(args, message.channel, exports.help))
 		return;
 	message.channel.send("pong!").catch(console.error);
 }
