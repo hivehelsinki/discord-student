@@ -6,5 +6,6 @@
 	"authorizedCommandCategories": ["PRIVATE GROUPS"],
 	"rulesChannelName": "man-discord",
 	"studentRole": "Student",
+	"staffRole": "Staff",
 	"privateGroupsCategory": "PRIVATE GROUPS"
 }

@@ -24,7 +24,7 @@ exports.addToPrivateGroupData = async function (client, usersData, author, eleme
     try {
       const resp = await exports.getIdByLogin(element);
       member = config.guild.members.cache.get(resp.data.discord_id);
-      if (member.roles.cache.some(role => [config.studentRole, "staff"].includes(role.name))) {
+      if (member.roles.cache.some(role => [config.studentRole, config.staffRole].includes(role.name))) {
         if (member.user.id != author.id && !(usersData.users.includes(member))) {
           usersData.users.push(member.user);
           usersData.logins_list.push(resp.data.login);
@@ -38,7 +38,7 @@ exports.addToPrivateGroupData = async function (client, usersData, author, eleme
       }
     }
   } else {
-    if (element.roles.cache.some(role => [config.studentRole, "staff"].includes(role.name))) {
+    if (element.roles.cache.some(role => [config.studentRole, config.stafftRole].includes(role.name))) {
       if (element.user.id != author.id && !(usersData.users.includes(element))) {
         try {
           const res = await exports.getLoginById(element);
