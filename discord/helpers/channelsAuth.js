@@ -13,7 +13,7 @@ exports.InPrivateGroupOnly = (channel) => {
 }
 
 exports.authorizedCommandLocations = (client, message) => {
-  let channel = message.channel;
+  const channel = message.channel;
   // We allow commands to be sent through DMs.
   if (channel.type === 'dm' && client.config.pmBotAuthorized === true)
     return true;
@@ -29,7 +29,7 @@ exports.authorizedCommandLocations = (client, message) => {
 }
 
 exports.onlyAuthorizeDmOrChannel = (client, message) => {
-  let channel = message.channel;
+  const channel = message.channel;
   // We allow commands to be sent through DMs.
   if (channel.type === 'dm' && client.config.pmBotAuthorized === true)
     return true;

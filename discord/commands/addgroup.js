@@ -1,6 +1,5 @@
 const config = require("../config.json");
 const Discord = require('discord.js');
-const e = require("express");
 
 exports.help = {
   name: "addgroup",
@@ -9,7 +8,7 @@ exports.help = {
 ‣ \`${config.prefix}addgroup @login1 login2 [@login3 etc]\` : Creates a private channel with you and the members specified as arguments (logins and/or mentions).`
 }
 
-var welcome_pm_message = `Welcome to your own **private channel**! 👋
+const welcome_pm_message = `Welcome to your own **private channel**! 👋
 
 If you wish, you can already update its name in the **settings**.
 If you want to **add** other members manually, run the following command:
