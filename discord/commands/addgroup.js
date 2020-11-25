@@ -20,11 +20,16 @@ Replace the logins with the members you want to add - Discord won't automaticall
 
 async function collectArgsData(client, argsWithoutMentions, message) {
   let usersData = {users: [message.author], logins_list: []};
-  await client.helpers.shared.getLoginById(message.author).then(res => {
+  try {
+    const res = await client.helpers.shared.getLoginById(message.author);
     usersData.logins_list.push(res.data.login)
-  }).catch(error => {
-    if (error.response.status != 404) { console.log(error); }
-  });
+  } catch (error) {
+    if (error.response) {
+      console.log(`Error while getting user (${error.response.status}): ${error.response.data.error}`);
+    } else {
+      console.log(error);
+    }
+  }
   await Promise.all(argsWithoutMentions.map(async (element) => {
     await client.helpers.shared.addToPrivateGroupData(client, usersData, message.author, element);
   }));

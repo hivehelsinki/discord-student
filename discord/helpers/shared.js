@@ -43,7 +43,7 @@ exports.addToPrivateGroupData = async function (client, usersData, author, eleme
         try {
           const res = await exports.getLoginById(element);
           usersData.users.push(element.user);
-          usersData.logins_list.push(res.data.login)
+          usersData.logins_list.push(res.data.login);
         } catch(error) {
           if (error.response) {
             console.log(`Error while getting user (${error.response.status}): ${error.response.data.error}`);
