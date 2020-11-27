@@ -29,16 +29,26 @@ If you want to learn more, you can take a look at [official documentation](https
 There are two parts to intra module. It is `apiClient.js` and `server.js`. The latter is an endpoint server for intra webhooks and the former is a basic client to make request to intra api. 
 
 #### [apiClient](https://github.com/hivehelsinki/discord-student/blob/main/intra/apiClient.js)
-In order to use api client, you need to specify your credentials in config file. After that, you can make a request simply using intraRequest function from apiClient which behaviour is similar to [axios request](https://github.com/axios/axios#axios-api) expect that you have to spevify method as a first variable. The client will take care of authentication and basic error handling. 
+In order to use api client, you need to specify your credentials in config file. After that, you can make a request simply using intraRequest function from apiClient which behaviour is similar to [axios request](https://github.com/axios/axios#axios-api) expect that you have to specify method as a first variable. The client will take care of authentication and basic error handling. 
 Example of usage: 
-```
+```javascript
 const ic = require('./apiClient.js');
 
-ic.intraRequest("get", "users", {params: {'filter[id]': 24007}})
+ic.req("get", "users", {params: {'filter[id]': 24007}})
 	.then(res => {
 	console.log(`statusCode: ${res.status}`)
 	console.log(res.data)
 })
+```
+
+If you are looking to get a paginated collection you may use
+```javascript
+const ic = require('./apiClient.js');
+
+ic.reqAll("get", "users", {params: {'filter[staff?]': false, 'filter[primary_campus_id]': 13}})
+	.then( usersArray => {
+		console.log(`statusCode: ${usersArray}`)
+	})
 ```
 
 #### server

@@ -6,7 +6,7 @@ const TIMEOUT = 900;
 
 let token;
 
-async function getToken() {
+const getToken = () => {
 	return axios.post(intraConf.token_url, {
 		client_id: intraConf.client, 
 		client_secret: intraConf.secret, 
@@ -15,11 +15,11 @@ async function getToken() {
 	});
 }
 
-async function renewToken() {
+const renewToken = () => {
 	token = getToken();
 }
 
-function authError(authHead, token) {
+function authError(authHead) {
 	if (!(authHead === "")) {
 		const desc = authHead.split('error_description="')[1].split('"')[0];
 		if (desc == "The access token expired" || desc == "The access token is invalid") {
@@ -32,21 +32,20 @@ function authError(authHead, token) {
 	return false
 }
 
-async function rateLimit(retryAfter) {
-	console.log("Rate limit exceeed");
-	const waitTime = parseInt(retryAfter);
-	console.log(`Waiting ${waitTime}s before requesting again`) 
+const rateLimit = async (retryAfter) => {
+	const waitTime = await parseInt(retryAfter);
+	console.log(`[apiClient] rate limit exceeed. Waiting ${waitTime}s before requesting again`) 
 	return new Promise(r => setTimeout(r, 1000 * waitTime));
 }
 
 function logError(resp, url, params) {
-	console.error(`Headers: ${resp.headers}`);
-	console.error(`${'Client' ? resp.status < 500 : 'Server'}Error(${resp.status})`)
-	console.error(`${url} with params: ${params}`)
-	console.error(`Response: ${resp.data}`)
+	console.error(`[apiClient] ${resp.status} - ${resp.status < 500 ? 'Client' : 'Server'}Error`)
+	console.error(`\theaders: ${resp.headers}`);
+	console.error(`\t${url} with params: ${JSON.stringify(params)}`)
+	console.error(`\tresponse: ${JSON.stringify(resp.data)}`)
 }
 
-async function writeHeader(params) {
+const writeHeader = async (params) => {
 	if (token === undefined) {
 		renewToken();
 	}
@@ -56,16 +55,38 @@ async function writeHeader(params) {
 	};
 }
 
-async function intraRequest(method, url, params={}) {
+const reqAll = async (method, url, params={}) => {
+	const ret = await req(method, url, {...params, per_page: 1})
+	const maxCount = ret.headers['x-total'];
+	const all = [];
+
+	for (let page = 1; page <= Math.ceil(maxCount / 100); page++)
+	{
+		newUrl = url + (url.includes('?') ? '&' : '?') + 'per_page=100&page=' + page
+
+		let data = (await req(method, newUrl, {
+					...params,
+			})).data;
+			all.push(...data)
+	}
+	return all;
+}
+
+const req = async (method, url, params={}) => {
 	await writeHeader(params);
 	params.method = params.method == undefined ? method : params.method;
 	params.timeout = params.timeout == undefined ? TIMEOUT * 1000 : params.timeout;
 	params.url = params.url == undefined ? `${intraConf.endpoint}/${url}` : params.url;	
+	
 	let tries = 0;
+	
 	while (tries < TRIESLIMIT) {
 		await new Promise(r => setTimeout(r, 50 * tries++));
+		
 		try {
-			return await axios(params);
+			const res = await axios(params);
+			console.log(`[apiClient] ${res.status} - ${url}`)
+			return res
 		} catch (error) {
 			let resp = error.response;
 			switch (resp.status) {
@@ -86,4 +107,4 @@ async function intraRequest(method, url, params={}) {
 	}
 }
 
-exports.intraRequest = intraRequest;
+module.exports = { req, reqAll }
