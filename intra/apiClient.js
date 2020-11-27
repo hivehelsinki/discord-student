@@ -62,9 +62,7 @@ const reqAll = async (method, url, params={}) => {
 
 	for (let page = 1; page <= Math.ceil(maxCount / 100); page++)
 	{
-		newUrl = url + (url.includes('?') ? '&' : '?') + 'per_page=100&page=' + page
-
-		let data = (await req(method, newUrl, {
+		let data = (await req(method, url, {
 					...params,
 			})).data;
 			all.push(...data)
