@@ -52,6 +52,7 @@ Every helper is exported and available in client object in `client.helpers`. It 
 Every command is exported and available in client object in `client.commands` enmap. In `message` event every message is checked for a command and if message includes a command, it runs an appropriate command code. Therefore, every command file should have `run` function in exports module which takes 3 arguments: client, message, and args. And, as always, to make the process easy an automated, every command file is named after the command, e.g. `ping` command named `ping.js`.
 
 <br />
+
 ---
 **NOTE: Naming convention is expecially important to allow smooth automated import process**
 
