@@ -42,13 +42,13 @@ It consists of two main parts: discord bot itself and everything related to inte
 
 The main entrypoint is [client.js](https://github.com/hivehelsinki/discord-student/blob/main/discord/client.js). It imports everything from these three folders: 
 
-**[helpers](https://github.com/hivehelsinki/discord-student/tree/main/discord/helpers) (everything that can be used and reused for practical purposes, e.g. message builder which allows to simply create discord message object)**
+**2.1. [helpers](https://github.com/hivehelsinki/discord-student/tree/main/discord/helpers) (everything that can be used and reused for practical purposes, e.g. message builder which allows to simply create discord message object)**
 Every helper is exported and available in client object in `client.helpers`. It will be named exactly as a file, e.g. `msgBuilder.js` will be available via `client.helpers.msgBuilder`. To create new helper you simply need to create a new file with desired name and export everything you want to exports module of this file. 
 <br />
-**[events](https://github.com/hivehelsinki/discord-student/tree/main/discord/events) (discord events handlers, e.g. new message, reactions to message, etc.)**
+**2.2. [events](https://github.com/hivehelsinki/discord-student/tree/main/discord/events) (discord events handlers, e.g. new message, reactions to message, etc.)**
  All the events are exported and attached to client. Events files should be named **exactly** after discord event, e.g. `message.js`. If you want to modify or add a new behaviour to an existing event, you should not create a new file, but instead change an existing one. 
  <br />
- **[commands](https://github.com/hivehelsinki/discord-student/tree/main/discord/commands) (bot commands, e.g. ping)**
+ **2.3. [commands](https://github.com/hivehelsinki/discord-student/tree/main/discord/commands) (bot commands, e.g. ping)**
 Every command is exported and available in client object in `client.commands` enmap. In `message` event every message is checked for a command and if message includes a command, it runs an appropriate command code. Therefore, every command file should have `run` function in exports module which takes 3 arguments: client, message, and args. And, as always, to make the process easy an automated, every command file is named after the command, e.g. `ping` command named `ping.js`.
 
 <br />
@@ -62,7 +62,9 @@ If you want to learn more, you can take a look at [official documentation](https
 
 There are two parts to the intra module. `apiClient.js` and `server.js`. The latter is an endpoint server for intra webhooks and the former is a basic client to make request to intra api. 
 
-#### 3.1 [apiClient](https://github.com/hivehelsinki/discord-student/blob/main/intra/apiClient.js)
+<br />
+
+**3.1. [apiClient](https://github.com/hivehelsinki/discord-student/blob/main/intra/apiClient.js)**
 In order to use api client, you need to specify your credentials in config file. After that, you can make a request simply using intraRequest function from apiClient which behaviour is similar to [axios request](https://github.com/axios/axios#axios-api) expect that you have to specify method as a first variable. The client will take care of authentication and basic error handling. 
 
 You can find more information about the 42 intra api: [here](https://api.intra.42.fr/apidoc)
@@ -87,8 +89,9 @@ ic.reqAll("get", "users", {params: {'filter[staff?]': false, 'filter[primary_cam
 		console.log(`statusCode: ${usersArray}`)
 	})
 ```
+<br /><br />
 
- #### 3.2 [server](https://github.com/hivehelsinki/discord-student/blob/main/intra/server.js)
+**3.2. [server](https://github.com/hivehelsinki/discord-student/blob/main/intra/server.js)**
  
 **⚠️ Endpoints cannot be configured by students. Only by staff members. ⚠️** 
 
