@@ -102,4 +102,4 @@ and we welcome you to make this first step and make your first pull request toda
 
 # 5. Contributors
 
-(add your name above if you contributes and a link to your github)
+(add your name above if you contribute and a link to your github)
