@@ -10,7 +10,7 @@
 
 # Description
 <div align="center">
-  <a href="https://github.com/hivehelsinki/discord-student/wiki">wiki</a> | ... | ... | etc.
+  <a href="https://github.com/hivehelsinki/discord-student/wiki">wiki</a> | <a href="https://github.com/hivehelsinki/discord-student/projects/1">kanban</a> | ... | etc.
 </div>
 <br />
 
