@@ -10,8 +10,7 @@ x-common:
 
 
 services:
-    
-  endpoint:
+  app:
     <<: *x-common
     container_name: discord_student_endpoint
     
@@ -29,7 +28,7 @@ services:
     ports:
       - 3131:3131
 
-    command: /bin/bash -c "npm run dev:endpoint"
+    command: /bin/bash -c "npm run dev"
 
 networks:
   discord_bot:

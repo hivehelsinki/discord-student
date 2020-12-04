@@ -10,7 +10,7 @@ x-common:
 
 
 services:
-  bot:
+  app:
     <<: *x-common
     container_name: discord_student_bot
     
@@ -25,7 +25,7 @@ services:
     volumes: 
       - .:/app
 
-    command: /bin/bash -c "npm install && npm run start"
+    command: /bin/bash -c "npm run start"
 
 
 networks:
