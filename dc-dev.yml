@@ -1,0 +1,36 @@
+version: "3.5"
+
+x-common:
+  &x-common
+
+  logging:
+    options:
+      max-file: "5"
+      max-size: 10m
+
+
+services:
+    
+  endpoint:
+    <<: *x-common
+    container_name: discord_student_endpoint
+    
+    build: .
+
+    environment:
+      - NODE_ENV=development
+
+    networks:
+      - discord_bot
+
+    volumes: 
+      - ./intra:/app/intra
+
+    ports:
+      - 3131:3131
+
+    command: /bin/bash -c "npm run dev:endpoint"
+
+networks:
+  discord_bot:
+    driver: bridge

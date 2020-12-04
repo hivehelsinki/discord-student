@@ -1,0 +1,33 @@
+version: "3.5"
+
+x-common:
+  &x-common
+
+  logging:
+    options:
+      max-file: "5"
+      max-size: 10m
+
+
+services:
+  bot:
+    <<: *x-common
+    container_name: discord_student_bot
+    
+    build: .
+
+    environment:
+      - NODE_ENV=production
+
+    networks:
+      - discord_bot
+
+    volumes: 
+      - .:/app
+
+    command: /bin/bash -c "npm install && npm run start"
+
+
+networks:
+  discord_bot:
+    driver: bridge
