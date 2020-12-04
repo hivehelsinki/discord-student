@@ -20,16 +20,9 @@ Replace the logins with the members you want to add - Discord won't automaticall
 
 async function collectArgsData(client, argsWithoutMentions, message) {
   let usersData = {users: [message.author], logins_list: []};
-  try {
-    const res = await client.helpers.shared.getLoginById(message.author);
-    usersData.logins_list.push(res.data.login)
-  } catch (error) {
-    if (error.response) {
-      console.log(`Error while getting user (${error.response.status}): ${error.response.data.error}`);
-    } else {
-      console.log(error);
-    }
-  }
+  let author_member = client.config.guild.member(message.author);
+  let author_login = author_member.nickname ? author_member.nickname.split(" ")[0] : message.author.username.split(" ")[0];
+  usersData.logins_list.push(author_login)
   await Promise.all(argsWithoutMentions.map(async (element) => {
     await client.helpers.shared.addToPrivateGroupData(client, usersData, message.author, element);
   }));
@@ -47,7 +40,7 @@ exports.run = (client, message, args) => {
   // Returns documentation.
   if (client.helpers.shared.helpArg(args, message.channel, exports.help))
     return;
-  
+
   let argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.USERS_PATTERN.test(arg));
   let cad = collectArgsData;
 
@@ -59,11 +52,11 @@ exports.run = (client, message, args) => {
     }
     usersData.logins_list = usersData.logins_list.filter((x, i) => i === usersData.logins_list.indexOf(x))
     usersData.logins_list.sort();
-    
+
     let channel_name = usersData.logins_list.join('_');
     channel_name = (channel_name.length > 100) ? channel_name.substr(0, 97) + '...' : channel_name;
 
-    const parent_category = message.guild.channels.cache.find(cat=> cat.name === client.config.privateGroupsCategory);
+    const parent_category = client.config.guild.channels.cache.find(cat=> cat.name === client.config.privateGroupsCategory);
     if (typeof parent_category === 'undefined' || !parent_category) {
       message.channel.send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`).catch(console.error);
       return;
@@ -84,7 +77,7 @@ exports.run = (client, message, args) => {
       parent: parent_category,
       permissionOverwrites: permissionOverwrites
     });
-  
+
     req.then(channel => {
       channel.send(welcome_pm_message).catch(console.error);
     }).catch(error => { console.log(error); });
