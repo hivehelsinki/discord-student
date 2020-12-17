@@ -19,9 +19,11 @@ exports.addToPrivateGroupData = async function (client, usersData, author, eleme
       if (res.size == 1) {
         member = res.last();
         if (member.roles.cache.some(role => [config.studentRole, config.staffRole].includes(role.name))) {
-          login = element.split(" ")[0];
-          usersData.users.push(member.user);
-          usersData.logins_list.push(login);
+          if (member.user.id != author.id && !(usersData.users.includes(member))) {
+            login = element.split(" ")[0];
+            usersData.users.push(member.user);
+            usersData.logins_list.push(login);
+          }
         }
       }
     } catch(error) { console.log(error); }
