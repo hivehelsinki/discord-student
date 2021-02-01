@@ -13,7 +13,7 @@ const welcome_pm_message = `Welcome to your own **private channel**! 👋
 If you wish, you can already update its name in the **settings**.
 If you want to **add** other members manually, run the following command:
 \`\`\`
-/addmember @login1 @login2
+/addmember login1 login2
 \`\`\`
 Replace the logins with the members you want to add - Discord won't automatically suggest them to you as they are not in the channel, make sure you write their login properly.
 `;
