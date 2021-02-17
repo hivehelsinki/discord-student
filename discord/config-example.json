@@ -2,7 +2,7 @@
 	"token": "TOKEN SECRET HERE",
 	"prefix": "/",
 	"pmBotAuthorized": true,
-	"authorizedCommandChannels": ["commands"],
+	"authorizedCommandChannels": ["channel-id"],
 	"authorizedCommandCategories": ["PRIVATE GROUPS"],
 	"rulesChannelName": "man-discord",
 	"studentRole": "Student",
