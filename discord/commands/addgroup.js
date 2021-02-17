@@ -65,11 +65,12 @@ exports.run = (client, message, args) => {
     let permissionOverwrites = [];
     // We deny every role to view this channel.
     client.config.guild.roles.cache.forEach(role => {
-      permissionOverwrites.push({ id: role.id, type: "role", deny: ['VIEW_CHANNEL'] })
+      permissionOverwrites.push({ id: role.id, type: "role", deny: ['VIEW_CHANNEL']})
     });
     // We allow author and every mentioned users to view this channel.
     usersData.users.forEach(user => {
-      permissionOverwrites.push({ id: user.id, allow: ['VIEW_CHANNEL'] });
+      permissionOverwrites.push({ id: user.id, allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+                                deny: ['MANAGE_CHANNELS', 'MANAGE_ROLES', 'MANAGE_WEBHOOKS', 'CREATE_INSTANT_INVITE', 'MANAGE_MESSAGES', 'SEND_TTS_MESSAGES'] });
     });
     // Create channel with permissions.
     let req = client.config.guild.channels.create(channel_name, {

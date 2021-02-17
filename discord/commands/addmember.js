@@ -41,7 +41,8 @@ exports.run = (client, message, args) => {
     }
     let welcome_pm_message = "Welcome to the private group ";
     usersData.users.forEach(user => {
-      channel.updateOverwrite(user.id, { VIEW_CHANNEL: true }).catch(console.error);
+      channel.updateOverwrite(user.id, { VIEW_CHANNEL: true, SEND_MESSAGES: true, MANAGE_CHANNELS: false, MANAGE_ROLES: false,
+                                         MANAGE_WEBHOOKS: false, CREATE_INSTANT_INVITE: false, MANAGE_MESSAGES: false, SEND_TTS_MESSAGES: false }).catch(console.error);
       welcome_pm_message += `${user.toString()} `;
     });
     channel.send(welcome_pm_message + "👋").catch(console.error); 
