@@ -17,7 +17,7 @@
     "nodemon": "^2.0.6"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": ">=0.21.1",
     "dateformat": "^3.0.3",
     "discord.js": "^12.4.1",
     "enmap": "^5.8.0",
