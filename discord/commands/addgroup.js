@@ -81,6 +81,10 @@ exports.run = (client, message, args) => {
 
     req.then(channel => {
       channel.send(welcome_pm_message).catch(console.error);
-    }).catch(error => { console.log(error); });
+    }).catch( (error) => {
+      message.channel.send(`\`\`\`${error}\`\`\``);
+      console.log(error); 
+    });
+
   });
 }
