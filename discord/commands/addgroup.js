@@ -83,12 +83,31 @@ exports.run = (client, message, args) => {
       return;
     }
 
-    const parent_category = client.config.guild.channels.cache.find(cat=> cat.name === client.config.privateGroupsCategory);
-    if (typeof parent_category === 'undefined' || !parent_category) {
-      message.channel.send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`).catch(console.error);
-      return;
-    }
-
-	createGroupChannel(client, message, parent_category, users_data);
+	const categories = client.config.guild.channels.cache.filter(channel => 
+		channel.type === 'category' &&
+		channel.name.startsWith(client.config.privateGroupsCategory)
+	);
+	if (categories.size < 1)
+	{
+		message.channel
+			.send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`)
+			.catch(console.error);
+		return ;
+	}
+	const parent_category = categories.find(category => category.children.size < 50);
+	if (!parent_category || typeof parent_category === 'undefined')
+	{
+		// Create a new category if existing ones are full.
+		const category_name = `${client.config.privateGroupsCategory} ${categories.size + 1}`;
+		client.config.guild.channels.create(category_name, {
+			type: 'category',
+			// Copy category specific permissions from the existing one.
+			permissionOverwrites: categories.first().permissionOverwrites,
+		})
+		.then(category => createGroupChannel(client, category, users_data, message))
+		.catch(error => console.log(error));
+	}
+	else
+		createGroupChannel(client, message, parent_category, users_data);
   });
 }
