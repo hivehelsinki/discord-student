@@ -104,7 +104,7 @@ exports.run = (client, message, args) => {
 			// Copy category specific permissions from the existing one.
 			permissionOverwrites: categories.first().permissionOverwrites,
 		})
-		.then(category => createGroupChannel(client, category, users_data, message))
+		.then(category => createGroupChannel(client, message, category, users_data))
 		.catch(error => console.log(error));
 	}
 	else
