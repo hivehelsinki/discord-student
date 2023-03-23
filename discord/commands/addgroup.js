@@ -34,41 +34,20 @@ async function collectArgsData(client, argsWithoutMentions, message) {
   return usersData;
 };
 
-exports.run = (client, message, args) => {
-  // We only allow this command to be run by DM or command channels (not categories).
-	if (!client.helpers.channelsAuth.onlyAuthorizeDmOrChannel(client, message)) return;
-  // Returns documentation.
-  if (client.helpers.shared.helpArg(args, message.channel, exports.help))
-    return;
+function createGroupChannel(client, message, parent_category, users_data) {
+	users_data.logins_list = users_data.logins_list.filter((x, i) => i === users_data.logins_list.indexOf(x))
+    users_data.logins_list.sort();
 
-  let argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.USERS_PATTERN.test(arg));
-  let cad = collectArgsData;
-
-  cad(client, argsWithoutMentions, message).then( res => {
-    let usersData = res;
-    if (usersData.users.length <= 1) {
-      message.channel.send(exports.help.usage).catch(console.error);
-      return;
-    }
-    usersData.logins_list = usersData.logins_list.filter((x, i) => i === usersData.logins_list.indexOf(x))
-    usersData.logins_list.sort();
-
-    let channel_name = usersData.logins_list.join('_');
+    let channel_name = users_data.logins_list.join('_');
     channel_name = (channel_name.length > 100) ? channel_name.substr(0, 97) + '...' : channel_name;
 
-    const parent_category = client.config.guild.channels.cache.find(cat=> cat.name === client.config.privateGroupsCategory);
-    if (typeof parent_category === 'undefined' || !parent_category) {
-      message.channel.send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`).catch(console.error);
-      return;
-    }
-
-    let permissionOverwrites = [];
+	let permissionOverwrites = [];
     // We deny every role to view this channel.
     client.config.guild.roles.cache.forEach(role => {
       permissionOverwrites.push({ id: role.id, type: "role", deny: ['VIEW_CHANNEL']})
     });
     // We allow author and every mentioned users to view this channel.
-    usersData.users.forEach(user => {
+    users_data.users.forEach(user => {
       permissionOverwrites.push({ id: user.id, allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
                                 deny: ['MANAGE_CHANNELS', 'MANAGE_ROLES', 'MANAGE_WEBHOOKS', 'CREATE_INSTANT_INVITE', 'MANAGE_MESSAGES', 'SEND_TTS_MESSAGES'] });
     });
@@ -85,6 +64,50 @@ exports.run = (client, message, args) => {
       message.channel.send(`\`\`\`${error}\`\`\``);
       console.log(error); 
     });
+}
 
+exports.run = (client, message, args) => {
+  // We only allow this command to be run by DM or command channels (not categories).
+  if (!client.helpers.channelsAuth.onlyAuthorizeDmOrChannel(client, message)) return;
+  // Returns documentation.
+  if (client.helpers.shared.helpArg(args, message.channel, exports.help))
+    return;
+
+  let argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.USERS_PATTERN.test(arg));
+  let cad = collectArgsData;
+
+  cad(client, argsWithoutMentions, message).then( res => {
+    let users_data = res;
+    if (users_data.users.length <= 1) {
+      message.channel.send(exports.help.usage).catch(console.error);
+      return;
+    }
+
+	const categories = client.config.guild.channels.cache.filter(channel => 
+		channel.type === 'category' &&
+		channel.name.startsWith(client.config.privateGroupsCategory)
+	);
+	if (categories.size < 1)
+	{
+		message.channel
+			.send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`)
+			.catch(console.error);
+		return ;
+	}
+	const parent_category = categories.find(category => category.children.size < 50);
+	if (!parent_category || typeof parent_category === 'undefined')
+	{
+		// Create a new category if existing ones are full.
+		const category_name = `${client.config.privateGroupsCategory} ${categories.size + 1}`;
+		client.config.guild.channels.create(category_name, {
+			type: 'category',
+			// Copy category specific permissions from the existing one.
+			permissionOverwrites: categories.first().permissionOverwrites,
+		})
+		.then(category => createGroupChannel(client, message, category, users_data))
+		.catch(error => console.log(error));
+	}
+	else
+		createGroupChannel(client, message, parent_category, users_data);
   });
 }

@@ -5,7 +5,7 @@ exports.InPrivateGroupOnly = (channel) => {
     channel.send("This command should be run in a private group channel.")
     return false;
   }
-  if (!channel.parent || channel.parent.name !== config.privateGroupsCategory) {
+  if (!channel.parent || !channel.parent.name.startsWith(config.privateGroupsCategory)) {
     channel.send("This command should be run in a private group channel.")
     return false;
   }
@@ -22,8 +22,13 @@ exports.authorizedCommandLocations = (client, message) => {
 		if (client.config.authorizedCommandChannels.includes(channel.id))
 			return true;
 		// We allow commands to be sent through the commands allowed categories.
-		if (channel.parent && client.config.authorizedCommandCategories.includes(channel.parent.name))
-      return true;
+		if (channel.parent)
+		{
+			if (client.config.authorizedCommandCategories.includes(channel.parent.name))
+				return true;
+			if (channel.parent.name.startsWith(client.config.privateGroupsCategory))
+				return true;
+		}
   }
   return false;
 }
