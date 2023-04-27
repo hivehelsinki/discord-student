@@ -112,7 +112,6 @@ exports.run = (client, message, args) => {
       // Create a new category if existing ones are full.
       const category_name = `${client.config.privateGroupsCategory} ${categories.size + 1}`;
 
-      console.log(categories.first().permissionOverwrites);
       client.config.guild.channels.create({
         name: category_name,
         type: ChannelType.GuildCategory,
