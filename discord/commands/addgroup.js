@@ -107,7 +107,7 @@ exports.run = (client, message, args) => {
       return ;
     }
 
-    const parent_category = categories.find(category => category.children.cache.size < 10);
+    const parent_category = categories.find(category => category.children.cache.size < 50);
     if (!parent_category || typeof parent_category === 'undefined') {
       // Create a new category if existing ones are full.
       const category_name = `${client.config.privateGroupsCategory} ${categories.size + 1}`;
