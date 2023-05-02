@@ -24,7 +24,7 @@ exports.run = (client, message, args) => {
   if (!client.helpers.channelsAuth.InPrivateGroupOnly(channel)) return;
 
   // TODO: Did it actually ever worked?!? arg are not mentionable since they are not in the channel.
-  const newLogins = args.filter(arg => !arg.type === 'MENTIONABLE');
+  const newLogins = args.filter(arg => !Discord.MessageMentions.UsersPattern.test(arg));
   const currentUsers = channel.permissionOverwrites;
   const cad = collectArgsData;
   cad(client, newLogins, message).then(res => {

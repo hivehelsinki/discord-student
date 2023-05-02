@@ -1,4 +1,5 @@
 const config = require('../config.json');
+const Discord = require('discord.js');
 const { ChannelType, PermissionsBitField } = require('discord.js');
 
 
@@ -85,7 +86,7 @@ exports.run = (client, message, args) => {
   // Returns documentation.
   if (client.helpers.shared.helpArg(args, message.channel, exports.help)) {return;}
 
-  const argsWithoutMentions = args.filter(arg => !arg.type === 'MENTIONABLE');
+  const argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.UsersPattern.test(arg));
   const cad = collectArgsData;
 
   cad(client, argsWithoutMentions, message).then(res => {
