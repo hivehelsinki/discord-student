@@ -1,12 +1,14 @@
-const config = require("../config.json");
+const config = require('../config.json');
 const Discord = require('discord.js');
+const { ChannelType, PermissionsBitField } = require('discord.js');
+
 
 exports.help = {
-  name: "addgroup",
-  description: "Creates a private group channel with the members specified as arguments.",
+  name: 'addgroup',
+  description: 'Creates a private group channel with the members specified as arguments.',
   usage: `‣ \`${config.prefix}addgroup help\` : Display the instructions.
-‣ \`${config.prefix}addgroup @login1 login2 [@login3 etc]\` : Creates a private channel with you and the members specified as arguments (logins and/or mentions).`
-}
+‣ \`${config.prefix}addgroup @login1 login2 [@login3 etc]\` : Creates a private channel with you and the members specified as arguments (logins and/or mentions).`,
+};
 
 const welcome_pm_message = `Welcome to your own **private channel**! 👋
 
@@ -19,10 +21,10 @@ Replace the logins with the members you want to add - Discord won't automaticall
 `;
 
 async function collectArgsData(client, argsWithoutMentions, message) {
-  let usersData = {users: [message.author], logins_list: []};
-  let author_member = client.config.guild.member(message.author);
-  let author_login = author_member.nickname ? author_member.nickname.split(" ")[0] : message.author.username.split(" ")[0];
-  usersData.logins_list.push(author_login)
+  const usersData = { users: [message.author], logins_list: [] };
+  const author_member = message.author;
+  const author_login = author_member.nickname ? author_member.nickname.split(' ')[0] : message.author.username.split(' ')[0];
+  usersData.logins_list.push(author_login);
   await Promise.all(argsWithoutMentions.map(async (element) => {
     await client.helpers.shared.addToPrivateGroupData(client, usersData, message.author, element);
   }));
@@ -32,82 +34,92 @@ async function collectArgsData(client, argsWithoutMentions, message) {
     }));
   }
   return usersData;
-};
+}
 
 function createGroupChannel(client, message, parent_category, users_data) {
-	users_data.logins_list = users_data.logins_list.filter((x, i) => i === users_data.logins_list.indexOf(x))
-    users_data.logins_list.sort();
+  users_data.logins_list = users_data.logins_list.filter((x, i) => i === users_data.logins_list.indexOf(x));
+  users_data.logins_list.sort();
 
-    let channel_name = users_data.logins_list.join('_');
-    channel_name = (channel_name.length > 100) ? channel_name.substr(0, 97) + '...' : channel_name;
+  let channel_name = users_data.logins_list.join('_');
+  channel_name = (channel_name.length > 100) ? channel_name.substr(0, 97) + '...' : channel_name;
 
-	let permissionOverwrites = [];
-    // We deny every role to view this channel.
-    client.config.guild.roles.cache.forEach(role => {
-      permissionOverwrites.push({ id: role.id, type: "role", deny: ['VIEW_CHANNEL']})
-    });
-    // We allow author and every mentioned users to view this channel.
-    users_data.users.forEach(user => {
-      permissionOverwrites.push({ id: user.id, allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
-                                deny: ['MANAGE_CHANNELS', 'MANAGE_ROLES', 'MANAGE_WEBHOOKS', 'CREATE_INSTANT_INVITE', 'MANAGE_MESSAGES', 'SEND_TTS_MESSAGES'] });
-    });
-    // Create channel with permissions.
-    let req = client.config.guild.channels.create(channel_name, {
-      type: 'text',
-      parent: parent_category,
-      permissionOverwrites: permissionOverwrites
-    });
+  const permissionOverwrites = [];
 
-    req.then(channel => {
-      channel.send(welcome_pm_message).catch(console.error);
-    }).catch( (error) => {
-      message.channel.send(`\`\`\`${error}\`\`\``);
-      console.log(error); 
+  // We deny every role to view this channel.
+  client.config.guild.roles.cache.forEach(role => {
+    permissionOverwrites.push({
+      id: role.id,
+      type: 'role',
+      deny: [PermissionsBitField.Flags.ViewChannel],
     });
+  });
+
+  // We allow author and every mentioned users to view this channel.
+  users_data.users.forEach(user => {
+    permissionOverwrites.push(
+      { id: user.id,
+        allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+        deny: [PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.ManageRoles, PermissionsBitField.Flags.ManageWebhooks, PermissionsBitField.Flags.CreateInstantInvite, PermissionsBitField.Flags.ManageMessages, PermissionsBitField.Flags.SendTTSMessages],
+      },
+    );
+  });
+
+  // Create channel with permissions.
+  const req = client.config.guild.channels.create({
+    name: channel_name,
+    type: ChannelType.GuildText,
+    parent: parent_category,
+    permissionOverwrites: permissionOverwrites,
+  });
+
+  req.then(channel => {
+    channel.send(welcome_pm_message).catch(console.error);
+  }).catch((error) => {
+    message.channel.send(`\`\`\`${error}\`\`\``);
+    console.log(error);
+  });
 }
 
 exports.run = (client, message, args) => {
   // We only allow this command to be run by DM or command channels (not categories).
   if (!client.helpers.channelsAuth.onlyAuthorizeDmOrChannel(client, message)) return;
   // Returns documentation.
-  if (client.helpers.shared.helpArg(args, message.channel, exports.help))
-    return;
+  if (client.helpers.shared.helpArg(args, message.channel, exports.help)) {return;}
 
-  let argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.USERS_PATTERN.test(arg));
-  let cad = collectArgsData;
+  const argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.UsersPattern.test(arg));
+  const cad = collectArgsData;
 
-  cad(client, argsWithoutMentions, message).then( res => {
-    let users_data = res;
+  cad(client, argsWithoutMentions, message).then(res => {
+    const users_data = res;
     if (users_data.users.length <= 1) {
       message.channel.send(exports.help.usage).catch(console.error);
       return;
     }
 
-	const categories = client.config.guild.channels.cache.filter(channel => 
-		channel.type === 'category' &&
-		channel.name.startsWith(client.config.privateGroupsCategory)
-	);
-	if (categories.size < 1)
-	{
-		message.channel
-			.send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`)
-			.catch(console.error);
-		return ;
-	}
-	const parent_category = categories.find(category => category.children.size < 50);
-	if (!parent_category || typeof parent_category === 'undefined')
-	{
-		// Create a new category if existing ones are full.
-		const category_name = `${client.config.privateGroupsCategory} ${categories.size + 1}`;
-		client.config.guild.channels.create(category_name, {
-			type: 'category',
-			// Copy category specific permissions from the existing one.
-			permissionOverwrites: categories.first().permissionOverwrites,
-		})
-		.then(category => createGroupChannel(client, message, category, users_data))
-		.catch(error => console.log(error));
-	}
-	else
-		createGroupChannel(client, message, parent_category, users_data);
+    const categories = client.config.guild.channels.cache.filter(channel =>
+      channel.type === ChannelType.GuildCategory &&
+		channel.name.startsWith(client.config.privateGroupsCategory),
+    );
+
+    if (categories.size < 1) {
+      message.channel
+        .send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`)
+        .catch(console.error);
+      return ;
+    }
+
+    const parent_category = categories.find(category => category.children.cache.size < 50);
+    if (!parent_category || typeof parent_category === 'undefined') {
+      // Create a new category if existing ones are full.
+      const category_name = `${client.config.privateGroupsCategory} ${categories.size + 1}`;
+
+      client.config.guild.channels.create({
+        name: category_name,
+        type: ChannelType.GuildCategory,
+        permissionOverwrites: categories.first().permissionOverwrites,
+      })
+        .then(category => createGroupChannel(client, message, category, users_data))
+        .catch(error => console.log(error));
+    } else {createGroupChannel(client, message, parent_category, users_data);}
   });
-}
+};
