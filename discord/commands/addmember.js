@@ -19,18 +19,18 @@ async function collectArgsData(client, newLogins, message) {
 exports.run = (client, message, args) => {
   const channel = message.channel;
   // Returns documentation.
-  if (client.helpers.shared.helpArg(args, channel, exports.help)) {return;}
+  if (client.helpers.shared.helpArg(args, channel, exports.help)) return;
   // Must only be sent from a private group channel.
   if (!client.helpers.channelsAuth.InPrivateGroupOnly(channel)) return;
 
-  // TODO: Did it actually ever worked?!? arg are not mentionable since they are not in the channel.
   const newLogins = args.filter(arg => !Discord.MessageMentions.UsersPattern.test(arg));
-  const currentUsers = channel.permissionOverwrites;
+  const currentUsers = channel.permissionOverwrites.cache;
   const cad = collectArgsData;
+
   cad(client, newLogins, message).then(res => {
     const usersData = res;
     usersData.users.forEach((user, index, object) => {
-      if (currentUsers.has(user.id)) {object.splice(index, 1);}
+      if (currentUsers.has(user.id)) { object.splice(index, 1); }
     });
     if (usersData.users.length == 0) {
       const msg = 'You must specify at least one login. Make sure it\'s spelled correctly, without an `@`, and that the student is not already in the group.\n';
@@ -38,16 +38,17 @@ exports.run = (client, message, args) => {
       return;
     }
     let welcome_pm_message = 'Welcome to the private group ';
+
     usersData.users.forEach(user => {
-      channel.permissionOverwrites.edit(user.id, {
-        VIEW_CHANNEL: true,
-        SEND_MESSAGES: true,
-        MANAGE_CHANNELS: false,
-        MANAGE_ROLES: false,
-        MANAGE_WEBHOOKS: false,
-        CREATE_INSTANT_INVITE: false,
-        MANAGE_MESSAGES: false,
-        SEND_TTS_MESSAGES: false,
+      channel.permissionOverwrites.edit(user, {
+        ViewChannel: true,
+        SendMessages: true,
+        ManageChannels: false,
+        ManageRoles: false,
+        ManageWebhooks: false,
+        CreateInstantInvite: false,
+        ManageMessages: false,
+        SendTTSMessages: false,
       }).catch(console.error);
       welcome_pm_message += `${user.toString()} `;
     });
