@@ -1,9 +1,9 @@
-const { Events, ChannelType } = require('discord.js');
+const { Events, ChannelType, MessageType } = require('discord.js');
 const { prefix } = require('../config.json');
 
 const autoThreadEnabled = (client, message) => {
   const channel = message.channel;
-  if (channel.type === ChannelType.GuildText) {
+  if (channel.type === ChannelType.GuildText && message.type === MessageType.Default) {
     if (client.config.autoThreadChannels && client.config.autoThreadChannels.includes(channel.id)) return true;
   }
   return false;
