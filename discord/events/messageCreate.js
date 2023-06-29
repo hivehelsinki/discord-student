@@ -11,7 +11,7 @@ const autoThreadEnabled = (client, message) => {
 
 const startThread = async (message) => {
   await message.startThread({
-    name: message.content.length > 0 ? message.content.substring(0, 99) : message.member.nickname + '\'s thread'
+    name: message.content.length > 0 ? message.content.substring(0, 99) : message.member.displayName + '\'s thread'
   })
 }
 
