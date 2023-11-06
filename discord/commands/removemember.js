@@ -9,15 +9,21 @@ exports.help = {
 };
 
 exports.run = (client, message, args) => {
-  const channel = message.channel;
+  removeMembers(client, message, message.channel, args)
+    .catch(console.error);
+};
+
+const removeMembers = async (client, message, channel, args) => {
   // Returns documentation.
   if (client.helpers.shared.helpArg(args, channel, exports.help)) return;
   // Must only be sent from a private group channel.
   if (!client.helpers.channelsAuth.InPrivateGroupOnly(channel)) return;
 
-  if (!message.channel.permissionsFor(message.author).has(PermissionsBitField.Flags.ManageChannels)) {
-    const msg = 'This command can only be used by channel owners\n';
-    message.channel.send(msg).catch(console.error);
+  if (!channel
+    .permissionsFor(message.author)
+    .has(PermissionsBitField.Flags.ManageChannels)) {
+    channel.send(`This command can only be used by channel owners\n`)
+      .catch(console.error);
     return;
   }
 
@@ -26,46 +32,41 @@ exports.run = (client, message, args) => {
     return;
   }
 
-  removeMembers(message, args).catch(console.error);
-};
-
-const removeMembers = async (message, args) => {
   let members = await Promise.all(args.map(async arg => {
     const member = await fetchMember(arg);
     if (!member) {
-      const msg = `Unknown user '${arg}'!`;
-      message.channel.send(msg).catch(console.error);
+      channel.send(`Unknown user '${arg}'!`).catch(console.error);
       return null;
     }
     return member;
   }));
 
-  const unique_members = [...new Set(members)];
+  const unique_members = [...new Set(members.filter(m => m))];
 
   for (const member of unique_members) {
     if (member.id === message.author.id) {
-      const msg = "Wont remove self from group, please use `/leavegroup --sure` instead if this is intentional.";
-      message.channel.send(msg).catch(console.error);
+      channel
+        .send(`Wont remove self from group, please use \`/leavegroup --sure\` instead if this is intentional.`)
+        .catch(console.error);
       return;
     }
-    if (!message.channel.permissionOverwrites.cache.has(member.id)) {
-      const msg = `${member} not was not found in this channel!`;
-      message.channel.send(msg).catch(console.error);
+    if (!channel.permissionOverwrites.cache.has(member.id)) {
+      channel
+        .send(`${member} not was not found in this channel!`)
+        .catch(console.error);
       return;
     }
-    await message.channel.permissionOverwrites.delete(member);
+    await channel.permissionOverwrites.delete(member);
   }
 };
 
 const fetchMember = async login => {
-  const result = await config.guild.members.fetch({ query: login });
-  if (result instanceof GuildMember)
-    return result;
-  if (!(result instanceof Collection))
-    throw "Unexpected type";
-  if (result.size === 0)
-    return null;
-  if (result.size === 1)
+  let result = await config.guild.members.fetch({ query: login, limit: 1 });
+  if (result instanceof Collection) {
     return result.first();
-  return result.find(member => member.displayName.split(' ')[0] === login);
+  }
+  else if (result instanceof GuildMember) {
+    return result;
+  }
+  else throw "Unexpected type";
 };
