@@ -49,11 +49,11 @@ const removeMembers = async (client, message, channel, args) => {
   for (const member of unique_members) {
     if (member.id === message.author.id) {
       channel
-        .send(`Wont remove self from group, please use \`/leavegroup --sure\` instead if this is intentional.`)
+        .send(`Wont remove self from group, please use \`${config.prefix}leavegroup --sure\` instead if this is intentional.`)
         .catch(console.error);
       return;
     }
-    if (!channel.permissionOverwrites.resolve(member.id)) {
+    if (!channel.permissionOverwrites.cache.some(po => po.id === member.id)) {
       channel
         .send(`${member} not was not found in this channel!`)
         .catch(console.error);
