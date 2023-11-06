@@ -42,7 +42,7 @@ exports.addToPrivateGroupData = async (client, usersData, author, element) => {
 };
 
 exports.fetchMember = async login => {
-  let result = await config.guild.members.fetch({ query: login, limit: 1 });
+  let result = await config.guild.members.fetch({ query: login });
   if (result instanceof Collection) {
     return result.find(member =>
       member.displayName.split(' ')[0].toUpperCase() === login.toUpperCase()
