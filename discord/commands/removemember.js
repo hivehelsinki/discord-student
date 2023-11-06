@@ -1,5 +1,5 @@
 const config = require('../config.json');
-const { PermissionsBitField, Collection } = require('discord.js');
+const { PermissionsBitField, Collection, GuildMember } = require('discord.js');
 
 exports.help = {
   name: 'removemember',
@@ -11,7 +11,7 @@ exports.help = {
 exports.run = (client, message, args) => {
   const channel = message.channel;
   // Returns documentation.
-  if (client.helpers.shared.helpArg(args, channel, exports.help)) { return; }
+  if (client.helpers.shared.helpArg(args, channel, exports.help)) return;
   // Must only be sent from a private group channel.
   if (!client.helpers.channelsAuth.InPrivateGroupOnly(channel)) return;
 
@@ -26,27 +26,46 @@ exports.run = (client, message, args) => {
     return;
   }
 
-  console.log(args);
+  removeMembers(message, args).catch(console.error);
+};
 
-  args.forEach(arg => {
-    config.guild.members.fetch({ query: arg, limit: 1 })
-      .then(result => {
-        let member;
-        if (result instanceof Collection)
-          member = result.first();
-        else
-          member = result;
-        if (member.id === message.author.id) {
-          // TODO:
-          const msg = "Wont remove self from group, please use `/leavegroup --sure` instead if this is intentional.";
-          message.channel.send(msg).catch(console.error);
-          return;
-        }
-        message.channel.permissionOverwrites.delete(member)
-          .catch(error => console.log(`removemember failed unexpectedly: ${error}`));
-      }).catch(error => {
-        // TODO: Failed to fetch member
-        console.log(error);
-      });
-  });
+const removeMembers = async (message, args) => {
+  let members = await Promise.all(args.map(async arg => {
+    const member = await fetchMember(arg);
+    if (!member) {
+      const msg = `Unknown user '${arg}'!`;
+      message.channel.send(msg).catch(console.error);
+      return null;
+    }
+    return member;
+  }));
+
+  const unique_members = [...new Set(members)];
+
+  for (const member of unique_members) {
+    if (member.id === message.author.id) {
+      const msg = "Wont remove self from group, please use `/leavegroup --sure` instead if this is intentional.";
+      message.channel.send(msg).catch(console.error);
+      return;
+    }
+    if (!message.channel.permissionOverwrites.cache.has(member.id)) {
+      const msg = `${member} not was not found in this channel!`;
+      message.channel.send(msg).catch(console.error);
+      return;
+    }
+    await message.channel.permissionOverwrites.delete(member);
+  }
+};
+
+const fetchMember = async login => {
+  const result = await config.guild.members.fetch({ query: login });
+  if (result instanceof GuildMember)
+    return result;
+  if (!(result instanceof Collection))
+    throw "Unexpected type";
+  if (result.size === 0)
+    return null;
+  if (result.size === 1)
+    return result.first();
+  return result.find(member => member.displayName.split(' ')[0] === login);
 };
