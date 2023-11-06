@@ -1,5 +1,5 @@
 const config = require('../config.json');
-const { PermissionsBitField, Collection, GuildMember } = require('discord.js');
+const { PermissionsBitField } = require('discord.js');
 
 exports.help = {
   name: 'removemember',
@@ -33,7 +33,7 @@ const removeMembers = async (client, message, channel, args) => {
   }
 
   let members = await Promise.all(args.map(async arg => {
-    const member = await fetchMember(arg);
+    const member = await client.helpers.shared.fetchMember(arg);
     if (!member) {
       channel.send(`Unknown user '${arg}'!`).catch(console.error);
       return null;
@@ -58,19 +58,4 @@ const removeMembers = async (client, message, channel, args) => {
     }
     await channel.permissionOverwrites.delete(member);
   }
-};
-
-const fetchMember = async login => {
-  let result = await config.guild.members.fetch({ query: login, limit: 1 });
-  if (result instanceof Collection) {
-    return result.find(member =>
-      member.displayName.split(' ')[0].toUpperCase() === login.toUpperCase()
-    );
-  }
-  else if (result instanceof GuildMember) {
-    if (result.displayName.split(' ')[0].toUpperCase() === login.toUpperCase())
-      return result;
-    return null;
-  }
-  else throw "Unexpected type";
 };
