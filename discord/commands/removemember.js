@@ -63,10 +63,14 @@ const removeMembers = async (client, message, channel, args) => {
 const fetchMember = async login => {
   let result = await config.guild.members.fetch({ query: login, limit: 1 });
   if (result instanceof Collection) {
-    return result.first();
+    return result.find(member =>
+      member.displayName.split(' ')[0].toUpperCase() === login.toUpperCase()
+    );
   }
   else if (result instanceof GuildMember) {
-    return result;
+    if (result.displayName.split(' ')[0].toUpperCase() === login.toUpperCase())
+      return result;
+    return null;
   }
   else throw "Unexpected type";
 };
