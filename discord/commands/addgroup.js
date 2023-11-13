@@ -56,13 +56,28 @@ function createGroupChannel(client, message, parent_category, users_data) {
 
   // We allow author and every mentioned users to view this channel.
   users_data.users.forEach(user => {
-    permissionOverwrites.push(
-      { id: user.id,
-        allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
-        deny: [PermissionsBitField.Flags.ManageChannels, PermissionsBitField.Flags.ManageRoles, PermissionsBitField.Flags.ManageWebhooks, PermissionsBitField.Flags.CreateInstantInvite, PermissionsBitField.Flags.ManageMessages, PermissionsBitField.Flags.SendTTSMessages],
-      },
-    );
+    permissionOverwrites.push({
+      id: user.id,
+      allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages],
+      deny: [
+        PermissionsBitField.Flags.ManageChannels,
+        PermissionsBitField.Flags.ManageRoles,
+        PermissionsBitField.Flags.ManageWebhooks,
+        PermissionsBitField.Flags.CreateInstantInvite,
+        PermissionsBitField.Flags.ManageMessages,
+        PermissionsBitField.Flags.SendTTSMessages],
+    },);
   });
+
+  // Allow manage channel perms for the creator
+  const owner_permissions = permissionOverwrites.find(po => po.id == message.author.id);
+  owner_permissions.allow = [
+    PermissionsBitField.Flags.ViewChannel,
+    PermissionsBitField.Flags.SendMessages,
+    PermissionsBitField.Flags.ManageChannels,
+    PermissionsBitField.Flags.ManageRoles,
+  ];
+  owner_permissions.deny = [];
 
   // Create channel with permissions.
   const req = client.config.guild.channels.create({
@@ -84,7 +99,7 @@ exports.run = (client, message, args) => {
   // We only allow this command to be run by DM or command channels (not categories).
   if (!client.helpers.channelsAuth.onlyAuthorizeDmOrChannel(client, message)) return;
   // Returns documentation.
-  if (client.helpers.shared.helpArg(args, message.channel, exports.help)) {return;}
+  if (client.helpers.shared.helpArg(args, message.channel, exports.help)) { return; }
 
   const argsWithoutMentions = args.filter(arg => !Discord.MessageMentions.UsersPattern.test(arg));
   const cad = collectArgsData;
@@ -98,14 +113,14 @@ exports.run = (client, message, args) => {
 
     const categories = client.config.guild.channels.cache.filter(channel =>
       channel.type === ChannelType.GuildCategory &&
-		channel.name.startsWith(client.config.privateGroupsCategory),
+      channel.name.startsWith(client.config.privateGroupsCategory),
     );
 
     if (categories.size < 1) {
       message.channel
         .send(`Could not find the \`${client.config.privateGroupsCategory}\` category, please contact an administrator.`)
         .catch(console.error);
-      return ;
+      return;
     }
 
     const parent_category = categories.find(category => category.children.cache.size < 50);
@@ -120,6 +135,6 @@ exports.run = (client, message, args) => {
       })
         .then(category => createGroupChannel(client, message, category, users_data))
         .catch(error => console.log(error));
-    } else {createGroupChannel(client, message, parent_category, users_data);}
+    } else { createGroupChannel(client, message, parent_category, users_data); }
   });
 };
