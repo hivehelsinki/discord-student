@@ -122,6 +122,7 @@ We welcome you to make this first step and make your first pull request today.
 
 # 5. Contributors
 - [Tuomas Jääsalo](https://github.com/alcjzk)
+- [Eemil Majuri](https://github.com/CrispLake)
 
 (add your name above if you contribute and a link to your github)
 
