@@ -131,7 +131,7 @@ exports.run = (client, message, args) => {
       client.config.guild.channels.create({
         name: category_name,
         type: ChannelType.GuildCategory,
-        permissionOverwrites: categories.first().permissionOverwrites,
+        permissionOverwrites: Array.from(categories.first().permissionOverwrites.cache.values()),
       })
         .then(category => createGroupChannel(client, message, category, users_data))
         .catch(error => console.log(error));
