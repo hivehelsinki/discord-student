@@ -1,11 +1,3 @@
-/* 
-
-Module.export turns function public 
-async tells Node.js the function requires time and will operate over the network
-and should continue running asynchronously while other functions run
-
-*/
-
 module.exports = async (discordClient, intraConf, req, res) => {
 	const { plant_name, location, message, due_at } = req.body;
 
