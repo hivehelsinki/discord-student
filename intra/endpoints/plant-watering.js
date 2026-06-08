@@ -12,11 +12,17 @@ module.exports = async (discordClient, intraConf, req, res) => {
 
 	if (!channel) {
 		console.log(`plant-watering: channel "${channelName}" not found`);
-		res.sendStatus(200);
+		res.sendStatus(503);
 		return;
 	}
 
 	const msgBuilder = discordClient.helpers.msgBuilder;
-	channel.send(msgBuilder.plantWateringMessage({ plant_name, location, message, due_at }));
-	res.sendStatus(200);
-};
+	try {
+		channel.send(msgBuilder.plantWateringMessage({ plant_name, location, message, due_at }));
+		res.sendStatus(200);
+	}
+	catch (error) {
+		console.error("plant-watering: Failed to send message to Discord", error);
+		res.sendStatus(500);
+	}
+}
