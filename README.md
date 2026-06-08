@@ -110,6 +110,22 @@ However, in order to set up a new endpoint, you have to create a file named exac
 
 You can check an example in [intra-events.js](https://github.com/hivehelsinki/discord-student/blob/main/intra/endpoints/intra-events.js). This endpoint receives information about every event created in the intra and posts information to announcements channel on discord.
 
+**Plant watering webhooks**
+
+New endpoint to receive alerts from the plant watering app and posts reminders to a dedicated Discord channel (configured via `plantAlertsChannelName` in `intra/config.json`).
+
+- **URL:** `POST http://localhost:3131/plant-watering`
+- **Header:** `x-secret: SUPER_SECRET_PRODUCTION_PASSWORD`
+
+Test:
+
+```bash
+curl -X POST http://localhost:3131/plant-watering \
+  -H "Content-Type: application/json" \
+  -H "x-secret: SUPER_SECRET_PRODUCTION_PASSWORD" \
+  -d '{"plant_name":"Basil","location":"kitchen","message":"Time to water!"}'
+```
+
 <br><br>
 
 # 4. Afterword
