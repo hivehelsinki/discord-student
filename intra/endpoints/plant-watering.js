@@ -29,7 +29,6 @@ module.exports = async (discordClient, intraConf, req, res) => {
 
 	const msgBuilder = discordClient.helpers.msgBuilder;
 	try {
-		await channel.send({ embeds: [msgBuilder.plantWateringMessage({ plant_name, location, message, due_at })] });
 		const sendChannel = channel.partial ? await channel.fetch() : channel;
 		await sendChannel.send({ embeds: [msgBuilder.plantWateringMessage({ plant_name, location, message, due_at })] });
 		res.sendStatus(200);
