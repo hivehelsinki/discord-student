@@ -10,7 +10,7 @@ module.exports = async (discordClient, intraConf, req, res) => {
 	let msgBuilder = discordClient.helpers.msgBuilder;
 
 	discordClient.channels.cache.find(c => c.name === 'announcements')
-		.send(msgBuilder.eventMessage(req.body));
+		.send({ embeds: [msgBuilder.eventMessage(req.body)] });
 
 	res.sendStatus(200);
 }
