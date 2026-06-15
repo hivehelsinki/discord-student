@@ -23,6 +23,10 @@ const PLANT_ALERT_STYLES = {
 };
 
 exports.plantWateringMessage = (data) => {
+
+	if (data.alert_type && !PLANT_ALERT_STYLES[data.alert_type]) {
+		console.warn(`[Warning] Unknown plant alert_type received: "${data.alert_type}". Falling back to default style.`);
+	}
 	const style = PLANT_ALERT_STYLES[data.alert_type] ?? PLANT_ALERT_STYLES.your_turn;
 	const embed = new EmbedBuilder()
 		.setColor(style.color)

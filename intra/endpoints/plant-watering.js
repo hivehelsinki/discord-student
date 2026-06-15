@@ -9,6 +9,7 @@ module.exports = async (discordClient, intraConf, req, res) => {
 		assignee_discord_id,
 		assignee_name,
 		alert_type,
+		url,
 	} = req.body;
 
 	if (!plant_name || typeof plant_name !== 'string') {
@@ -40,7 +41,7 @@ module.exports = async (discordClient, intraConf, req, res) => {
 		const sendChannel = channel.partial ? await channel.fetch() : channel;
 		const mention = msgBuilder.plantWateringMention(assignee_discord_id);
 		await sendChannel.send({
-			content: mention,
+			...(mention && { content: mention }),
 			embeds: [msgBuilder.plantWateringMessage({
 				plant_name,
 				location,
@@ -48,6 +49,7 @@ module.exports = async (discordClient, intraConf, req, res) => {
 				due_at,
 				assignee_name,
 				alert_type,
+				url,
 			})],
 		});
 		res.sendStatus(200);
