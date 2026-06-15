@@ -123,7 +123,7 @@ Test:
 curl -X POST http://localhost:3131/plant-watering \
   -H "Content-Type: application/json" \
   -H "x-secret: SUPER_SECRET_PRODUCTION_PASSWORD" \
-  -d '{"plant_name":"Basil","location":"kitchen","message":"Time to water!"}'
+  -d '{"plant_name":"Basil","location":"kitchen","message":"Time to water!","due_at":"2026-06-15T10:00:00Z","assignee_discord_id":"123456789012345678","assignee_name":"Alex","alert_type":"your_turn"}'
 ```
 
 <br><br>

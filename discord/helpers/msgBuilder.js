@@ -16,13 +16,23 @@ exports.eventMessage = (data) => {
 		);
 }
 
+const PLANT_ALERT_STYLES = {
+	your_turn: { color: '#4CAF50', title: (name) => `Your turn: ${name}` },
+	overdue: { color: '#E53935', title: (name) => `Overdue: ${name}` },
+	reassigned: { color: '#2196F3', title: (name) => `Reassigned: ${name}` },
+};
+
 exports.plantWateringMessage = (data) => {
+	const style = PLANT_ALERT_STYLES[data.alert_type] ?? PLANT_ALERT_STYLES.your_turn;
 	const embed = new EmbedBuilder()
-		.setColor('#4CAF50')
-		.setTitle(`Water ${data.plant_name}`)
+		.setColor(style.color)
+		.setTitle(style.title(data.plant_name))
 		.setDescription(data.message || 'Time to water this plant!');
 
 	const fields = [];
+	if (data.assignee_name) {
+		fields.push({ name: 'Assignee', value: data.assignee_name, inline: true });
+	}
 	if (data.location) {
 		fields.push({ name: 'Location', value: data.location, inline: true });
 	}
@@ -34,4 +44,11 @@ exports.plantWateringMessage = (data) => {
 	}
 
 	return embed;
+};
+
+exports.plantWateringMention = (assigneeDiscordId) => {
+	if (!assigneeDiscordId || !/^\d{17,20}$/.test(assigneeDiscordId)) {
+		return undefined;
+	}
+	return `<@${assigneeDiscordId}>`;
 };
