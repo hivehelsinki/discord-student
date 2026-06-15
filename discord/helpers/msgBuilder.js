@@ -39,6 +39,9 @@ exports.plantWateringMessage = (data) => {
 	if (data.due_at) {
 		fields.push({ name: 'Due', value: dateFormat(data.due_at, 'dd/mm/yyyy HH:MM'), inline: true });
 	}
+	if (data.url) {
+		fields.push({ name: 'Link to plant', value: `[Open link](${data.url})` });
+	}
 	if (fields.length) {
 		embed.addFields(fields);
 	}
