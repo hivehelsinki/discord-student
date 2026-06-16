@@ -1,7 +1,16 @@
 const { ChannelType } = require('discord.js');
 
 module.exports = async (discordClient, intraConf, req, res) => {
-	const { plant_name, location, message, due_at } = req.body;
+	const {
+		plant_name,
+		location,
+		message,
+		due_at,
+		assignee_discord_id,
+		assignee_name,
+		alert_type,
+		url,
+	} = req.body;
 
 	if (!plant_name || typeof plant_name !== 'string') {
 		console.log('plant-watering: invalid payload — plant_name is required');
@@ -30,7 +39,19 @@ module.exports = async (discordClient, intraConf, req, res) => {
 	const msgBuilder = discordClient.helpers.msgBuilder;
 	try {
 		const sendChannel = channel.partial ? await channel.fetch() : channel;
-		await sendChannel.send({ embeds: [msgBuilder.plantWateringMessage({ plant_name, location, message, due_at })] });
+		const mention = msgBuilder.plantWateringMention(assignee_discord_id);
+		await sendChannel.send({
+			...(mention && { content: mention }),
+			embeds: [msgBuilder.plantWateringMessage({
+				plant_name,
+				location,
+				message,
+				due_at,
+				assignee_name,
+				alert_type,
+				url,
+			})],
+		});
 		res.sendStatus(200);
 	}
 	catch (error) {
