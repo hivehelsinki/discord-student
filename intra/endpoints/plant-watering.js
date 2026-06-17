@@ -20,18 +20,22 @@ module.exports = async (discordClient, intraConf, req, res) => {
 
 	const guild = discordClient.config?.guild;
 	if (!guild) {
-		console.log('plant-watering: bot is not ready');
+		console.log('SproutSquad Watering Scheduler 🪴: bot is not ready');
 		res.sendStatus(503);
 		return;
 	}
 
-	const channelName = intraConf.plantAlertsChannelName || 'plant-watering';
-	const channel = guild.channels.cache.find(
-		c => c.name === channelName && c.type === ChannelType.GuildText
-	);
+	const channelTarget = intraConf.plantAlertsChannelName || 'SproutSquad Watering Scheduler 🪴';
+	let channel = guild.channels.cache.get(channelTarget);
 
 	if (!channel) {
-		console.log(`plant-watering: channel "${channelName}" not found`);
+        channel = guild.channels.cache.find(
+            c => c.name === channelTarget && (c.type === ChannelType.GuildText || c.isThread())
+        );
+    }
+
+	if (!channel) {
+		console.log(`SproutSquad Watering Scheduler 🪴: channel "${channelTarget}" not found`);
 		res.sendStatus(503);
 		return;
 	}
