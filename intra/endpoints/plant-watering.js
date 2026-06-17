@@ -1,5 +1,3 @@
-const { ChannelType } = require('discord.js');
-
 module.exports = async (discordClient, intraConf, req, res) => {
 	const {
 		plant_name,
@@ -27,15 +25,17 @@ module.exports = async (discordClient, intraConf, req, res) => {
 
 	const channelTarget = intraConf.plantAlertsChannelName || 'SproutSquad Watering Scheduler 🪴';
 	let channel = guild.channels.cache.get(channelTarget);
-
 	if (!channel) {
-        channel = guild.channels.cache.find(
-            c => c.name === channelTarget && (c.type === ChannelType.GuildText || c.isThread())
-        );
-    }
-
+		channel = await guild.channels.fetch(channelTarget).catch(() => null);
+	}
 	if (!channel) {
-		console.log(`SproutSquad Watering Scheduler 🪴: channel "${channelTarget}" not found`);
+		channel = guild.channels.cache.find(
+			c => c.name === channelTarget && c.isTextBased()
+		);
+	}
+
+	if (!channel?.isTextBased()) {
+		console.log(`SproutSquad Watering Scheduler 🪴: sendable channel "${channelTarget}" not found (use a text channel or forum post thread ID, not a forum channel ID)`);
 		res.sendStatus(503);
 		return;
 	}
@@ -43,6 +43,11 @@ module.exports = async (discordClient, intraConf, req, res) => {
 	const msgBuilder = discordClient.helpers.msgBuilder;
 	try {
 		const sendChannel = channel.partial ? await channel.fetch() : channel;
+		if (!sendChannel?.isTextBased()) {
+			console.log(`SproutSquad Watering Scheduler 🪴: channel "${channelTarget}" is not sendable`);
+			res.sendStatus(503);
+			return;
+		}
 		const mention = msgBuilder.plantWateringMention(assignee_discord_id);
 		await sendChannel.send({
 			...(mention && { content: mention }),
