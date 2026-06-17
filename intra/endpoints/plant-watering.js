@@ -23,14 +23,19 @@ module.exports = async (discordClient, intraConf, req, res) => {
 		return;
 	}
 
-	const channelTarget = intraConf.plantAlertsChannelName || 'SproutSquad Watering Scheduler 🪴';
-	let channel = guild.channels.cache.get(channelTarget);
-	if (!channel) {
-		channel = await guild.channels.fetch(channelTarget).catch(() => null);
+	const channelTarget = intraConf.plantAlertsChannelName
+	const defaultName = 'SproutSquad Watering Scheduler 🪴';
+	let channel = null;
+	
+	if(channelTarget) {
+		channel = guild.channels.cache.get(channelTarget);
+		if(!channel) {
+			channel = await guild.channels.fetch(channelTarget).catch(() => null);
+		}
 	}
-	if (!channel) {
+	if(!channel) {
 		channel = guild.channels.cache.find(
-			c => c.name === channelTarget && c.isTextBased()
+			c => (c.name === channelTargert || c.name === defaultName) && c.isTextBased()
 		);
 	}
 
