@@ -23,7 +23,7 @@ module.exports = async (discordClient, intraConf, req, res) => {
 		return;
 	}
 
-	const channelTarget = intraConf.plantAlertsChannelName
+	const channelTarget = intraConf.plantAlertsChannelName;
 	const defaultName = 'SproutSquad Watering Scheduler 🪴';
 	let channel = null;
 	
@@ -33,10 +33,10 @@ module.exports = async (discordClient, intraConf, req, res) => {
 			channel = await guild.channels.fetch(channelTarget).catch(() => null);
 		}
 	}
+
 	if(!channel) {
 		channel = guild.channels.cache.find(
-			c => (c.name === channelTargert || c.name === defaultName) && c.isTextBased()
-		);
+			c => (c.name === channelTarget || c.name === defaultName) && c.isTextBased());
 	}
 
 	if (!channel?.isTextBased()) {
